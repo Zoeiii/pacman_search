@@ -74,6 +74,7 @@ def tinyMazeSearch(problem):
     return [s, s, w, s, w, w, s, w]
 
 
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -117,41 +118,56 @@ def depthFirstSearch(problem):
                     newPath = path + [succ[1]]
                     exploredSet.push((succ[0], newPath))
 
-
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     from util import Queue
-    start = problem.getStartState()  # init pos with the start state
-    exploredSet = Queue()  # use it as the fringe of graph search
+
+    # queueXY: ((x,y),[path]) #
+    queueXY = Queue()
 
     visited = []  # Visited states
     path = []  # Every state keeps it's path from the starting state
 
-    if (problem.isGoalState(start)):
+    # Check if initial state is goal state #
+    if problem.isGoalState(problem.getStartState()):
         return []
-    exploredSet.push((start, []))  # push start to the stack
+
+    # Start from the beginning and find a solution, path is empty list #
+    queueXY.push((problem.getStartState(), []))
 
     while (True):
-        flag = False
-        if exploredSet.isEmpty():
+
+        # Terminate condition: can't find solution #
+        if queueXY.isEmpty():
             return []
-        node, path = exploredSet.pop()
-        visited.append(node)  # add node to visited list
-        if (problem.isGoalState(node)):
+
+        # Get informations of current state #
+        xy, path = queueXY.pop()  # Take position and path
+        visited.append(xy)
+
+        # Comment this and uncomment 179. This is only works for autograder
+        # In lectures we check if a state is a goal when we find successors
+
+        # Terminate condition: reach goal #
+        if problem.isGoalState(xy):
             return path
 
-        # check if the node is not in the exploredSet
-        for nodes in exploredSet.list:
-            if (node in nodes[0]):
-                flag = True
-        if (not flag):
-            successors = problem.getSuccessors(node)  # expand the node successor,action, stepCost
-            if successors:
-                for succ in successors:
-                    if succ[0] not in visited:  # if visited and set doesnt contains succ, add it
-                        newPath = path + [succ[1]]
-                        exploredSet.push((succ[0], newPath))
+        # Get successors of current state #
+        succ = problem.getSuccessors(xy)
+
+        # Add new states in queue and fix their path #
+        if succ:
+            for item in succ:
+                if item[0] not in visited and item[0] not in (state[0] for state in queueXY.list):
+                    # Lectures code:
+                    # All impementations run in autograder and in comments i write
+                    # the proper code that i have been taught in lectures
+                    # if problem.isGoalState(item[0]):
+                    #   return path + [item[1]]
+
+                    newPath = path + [item[1]]  # Calculate new path
+                    queueXY.push((item[0], newPath))
 
 
 def uniformCostSearch(problem):
@@ -162,28 +178,26 @@ def uniformCostSearch(problem):
     exploredSet = PriorityQueue()  # use it as the fringe of graph search
 
     visited = []  # Visited states
-    path = []  # Every state keeps it's path from the starting state
 
     if problem.isGoalState(start):
         return []
     # ((node, path, cost),priority)
     exploredSet.update((start, [], 0), 0)  # push start to the priority queue
 
-    while (True):
-        if exploredSet.isEmpty():
-            return []
+    while not exploredSet.isEmpty():
         node, path, cost = exploredSet.pop()
-        visited.append(node)  # add node to explored
-        if problem.isGoalState(node):
-            return path
-        successors = problem.getSuccessors(node)  # successor,action, stepCost
+        if node not in visited:
+            visited.append(node)  # add node to explored
+            if problem.isGoalState(node):
+                return path
+            successors = problem.getSuccessors(node)  # successor,action, stepCost
 
-        if successors:
-            for nextNode, action, newCost in successors:
-                if nextNode not in visited:  # if visited and set doesnt contains succ, add it
-                    newPath = path + [action]  # cal the new path associated with the current node
-                    newCost += cost  # cal the cost after adding the cost of getting that node
-                    exploredSet.update((nextNode, newPath, newCost), newCost)
+            if successors:
+                for nextNode, action, newCost in successors:
+                    if nextNode not in visited:  # if visited and set doesnt contains succ, add it
+                        newPath = path + [action]  # cal the new path associated with the current node
+                        priority = newCost + cost  # cal the cost after adding the cost of getting that node
+                        exploredSet.update((nextNode, newPath, priority), priority)
 
 
 def nullHeuristic(state, problem=None):

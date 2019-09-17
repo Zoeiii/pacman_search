@@ -298,11 +298,6 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        """
-        init state = [0,0,0,0] all four corners not explored 
-        goal: goes to all four corners (mark all four self.corners as True)
-            [1,1,1,1]
-        """
 
     def getStartState(self):
         """
@@ -389,14 +384,24 @@ def cornersHeuristic(state, problem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+
+    if problem.isGoalState(state):
+        return 0
+    """
+    function heuristic(node) =
+    dx = abs(node.x - goal.x)
+    dy = abs(node.y - goal.y)
+    return D * (dx + dy)
+    how do I pick D? 
+    """
     import sys
     lowest = sys.maxint
     xy1 = state[0]
-    for xy2 in corners:
-        dis = ((xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2) ** 0.5
-        if dis<lowest:
+    for xy2 in state[1]:
+        dis = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+        if dis <= lowest:
             lowest = dis
-
+    # but the total cost is not the optimal one? that *3 make h(n) to be inadmissible?
     return lowest
 
 
@@ -498,7 +503,20 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+
+    #explor the nearest food in the foodGrid as a list using position
+
+    foodToEat = foodGrid.asList()
+    totalCost = 0
+    curPoint = position
+    while foodToEat:
+        heuristic_cost, food = \
+            min([(util.manhattanDistance(curPoint, food), food) for food in foodToEat])
+        foodToEat.remove(food)
+        curPoint = food
+        totalCost += heuristic_cost
+
+    return totalCost
 
 
 class ClosestDotSearchAgent(SearchAgent):
