@@ -305,6 +305,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        #state[0] = current position, state[1]=corners letf to be explored
         return (self.startingPosition, self.corners)
 
     def isGoalState(self, state):
@@ -387,6 +388,7 @@ def cornersHeuristic(state, problem):
 
     dis = [0]
     for corner in state[1]:
+        #store all the distances computed by the mahattan distnace
         dis.append(util.manhattanDistance(state[0], corner))
     #why do we using the max not the min?
     return max(dis)
@@ -494,6 +496,8 @@ def foodHeuristic(state, problem):
     distances = [0]
     for food in foodGrid.asList():
         # distances.append(util.manhattanDistance(position, food))
+        # similar to the corner problem, picking the max distance,
+        # however i found that using the maze distance explored less node than mahattan distance
         distances.append(mazeDistance(position, food, problem.startingGameState))
     return max(distances)
 
