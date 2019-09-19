@@ -385,24 +385,11 @@ def cornersHeuristic(state, problem):
 
     "*** YOUR CODE HERE ***"
 
-    if problem.isGoalState(state):
-        return 0
-    """
-    function heuristic(node) =
-    dx = abs(node.x - goal.x)
-    dy = abs(node.y - goal.y)
-    return D * (dx + dy)
-    how do I pick D? 
-    """
-    import sys
-    lowest = sys.maxint
-    xy1 = state[0]
-    for xy2 in state[1]:
-        dis = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
-        if dis <= lowest:
-            lowest = dis
-    # but the total cost is not the optimal one? that *3 make h(n) to be inadmissible?
-    return lowest
+    dis = [0]
+    for corner in state[1]:
+        dis.append(util.manhattanDistance(state[0], corner))
+    #why do we using the max not the min?
+    return max(dis)
 
 
 class AStarCornersAgent(SearchAgent):
@@ -504,20 +491,11 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
 
-    #explor the nearest food in the foodGrid as a list using position
-
-    foodToEat = foodGrid.asList()
-    totalCost = 0
-    curPoint = position
-    while foodToEat:
-        heuristic_cost, food = \
-            min([(util.manhattanDistance(curPoint, food), food) for food in foodToEat])
-        foodToEat.remove(food)
-        curPoint = food
-        totalCost += heuristic_cost
-
-    return totalCost
-
+    distances = [0]
+    for food in foodGrid.asList():
+        # distances.append(util.manhattanDistance(position, food))
+        distances.append(mazeDistance(position, food, problem.startingGameState))
+    return max(distances)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

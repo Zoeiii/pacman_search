@@ -127,7 +127,6 @@ def breadthFirstSearch(problem):
     queueXY = Queue()
 
     visited = []  # Visited states
-    path = []  # Every state keeps it's path from the starting state
 
     # Check if initial state is goal state #
     if problem.isGoalState(problem.getStartState()):
@@ -145,9 +144,6 @@ def breadthFirstSearch(problem):
         # Get informations of current state #
         xy, path = queueXY.pop()  # Take position and path
         visited.append(xy)
-
-        # Comment this and uncomment 179. This is only works for autograder
-        # In lectures we check if a state is a goal when we find successors
 
         # Terminate condition: reach goal #
         if problem.isGoalState(xy):
