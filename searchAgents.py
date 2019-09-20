@@ -390,7 +390,7 @@ def cornersHeuristic(state, problem):
     for corner in state[1]:
         #store all the distances computed by the mahattan distnace
         dis.append(util.manhattanDistance(state[0], corner))
-    #why do we using the max not the min?
+    #take the max dis as heuristic
     return max(dis)
 
 
